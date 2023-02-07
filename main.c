@@ -6,24 +6,11 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/07 11:01:42 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/07 14:50:58 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-void	verify_access(char *from, char *to)
-{
-	int	error;
-
-	error = 0;
-	if (access(from, F_OK) == -1 || access(from, R_OK) == -1)
-		error = ft_printf("%s: %s\n",strerror(errno), from);
-	if (access(to, F_OK) == -1 ||access(to, R_OK) == -1)
-		error = ft_printf("%s: %s\n",strerror(errno), to);
-	if (error)
-		exit (error);
-}
 
 char	*get_paths(char **envp)
 {
@@ -45,7 +32,7 @@ char	*get_paths(char **envp)
 	return (path);
 }
 
-char	*free_paths_exit(char **paths)
+char	*free_paths_exit(char **paths, int error)
 {
 	int	i;
 
@@ -56,7 +43,9 @@ char	*free_paths_exit(char **paths)
 		i++;
 	}
 	free(paths);
-	exit(ft_printf("%s\n",strerror(errno)));
+	if (error)
+		exit(ft_printf("%s\n",strerror(errno)));
+	return (NULL);
 }
 
 char	*find_path(char *command, char **paths)
@@ -70,11 +59,11 @@ char	*find_path(char *command, char **paths)
 	{
 		temp = ft_strjoin(paths[i], "/");
 		if (!temp)
-			free_paths_exit(paths);
+			free_paths_exit(paths, 1);
 		temp2 = ft_strjoin(temp, command);
 		free(temp);
 		if (!temp2)
-			free_paths_exit(paths);
+			free_paths_exit(paths, 1);
 		if (!access(temp2, F_OK))
 		{
 			if (!access(temp2, X_OK))
@@ -84,14 +73,30 @@ char	*find_path(char *command, char **paths)
 		free(temp2);
 		i++;
 	}
-	return (free_paths_exit(paths));
+	return (free_paths_exit(paths, 1));
 }
 
 int	main(int argc, char **argv, char **envp)
 {
+	t_data	data;
+
 	if (argc != 5)
 		exit (ft_printf("Error\nMust have 4 arguments\n"));
-	verify_access(argv[1], argv[argc - 1]);
+
+	data.input = open(argv[1], O_RDONLY);
+	data.output = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
+	if (data.input < 0 || data.output < 0)
+		exit (ft_printf("%s: %s\n",strerror(errno), argv[1]));
+
+	char	**split_cmd;
+	split_cmd = ft_split(argv[2], ' ');
+	if (!split_cmd)
+		exit(ft_printf("%s\n",strerror(errno)));
+	data.cmd = ft_strdup(split_cmd[0]);
+	if (!data.cmd)
+		exit(ft_printf("%s\n",strerror(errno)));
+
+	data.arg = split_cmd;
 
 	char	*paths;
 	paths = get_paths(envp);
@@ -102,19 +107,17 @@ int	main(int argc, char **argv, char **envp)
 		exit(ft_printf("%s\n",strerror(errno)));
 	free(paths);
 
-	char	*path;
-	path = find_path(argv[2], split_paths);
-	int	i = 0;
-	while (split_paths[i])
-	{
-		free(split_paths[i]);
-		i++;
-	}
-	free(split_paths);
+	data.path = find_path(data.cmd, split_paths);
+	free_paths_exit(split_paths, 0);
 
-	char	*newargv[3] = {path, argv[1], NULL};
-	execve(path, newargv, NULL);
-	//ft_printf("%d\n", execve("/bin/cat", newargv, NULL));
-	free(path);
+	free(data.arg[0]);
+	data.arg[0] = data.path;
+
+	ft_printf(argv[1]);
+	//char	*newargv[3] = {data.path, argv[1], NULL};
+	//execve(data.path, data.arg, NULL);
+
+	free_paths_exit(data.arg, 0);
+	free(data.cmd);
 	return (0);
 }
