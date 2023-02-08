@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:26 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/07 14:03:42 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/08 13:44:00 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,20 @@
 # include <stdio.h>
 # include <string.h>
 # include <fcntl.h>
+# include <sys/wait.h>
 
 # include "ft_printf/libftprintf.h"
 # include "libft/libft.h"
 
 typedef struct s_data
 {
-	int	input;
-	int	output;
-
-	char	*cmd;
+	int		input;
+	int		output;
 	char	**arg;
-	char	*path;
+	char	**paths;
+	int		pipe[2];
+	pid_t	pid1;
+	pid_t	pid2;
 }	t_data;
 
 #endif
