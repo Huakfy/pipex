@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:26 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/08 13:44:00 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/08 14:49:57 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <errno.h>
-# include <stdio.h>
+//# include <stdio.h>
 # include <string.h>
 # include <fcntl.h>
 # include <sys/wait.h>

@@ -6,12 +6,13 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/08 14:00:39 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/08 16:09:35 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
+//initialise tout les arguments a close / free
 void	init_args(t_data *data)
 {
 	data->input = -1;
@@ -22,6 +23,7 @@ void	init_args(t_data *data)
 	data->pipe[1] = -1;
 }
 
+//close / free tout les arguments en fin de programme / cas d'erreur
 void	free_all(t_data *data, int error)
 {
 	int	i;
@@ -32,22 +34,16 @@ void	free_all(t_data *data, int error)
 		close (data->output);
 	if (data->arg)
 	{
-		i = 0;
-		while (data->arg[i])
-		{
+		i = -1;
+		while (data->arg[++i])
 			free(data->arg[i]);
-			i++;
-		}
 		free(data->arg);
 	}
 	if (data->paths)
 	{
-		i = 0;
-		while (data->paths[i])
-		{
+		i = -1;
+		while (data->paths[++i])
 			free(data->paths[i]);
-			i++;
-		}
 		free(data->paths);
 	}
 	if (data->pipe[0] && data->pipe[0] != -1)
@@ -58,6 +54,7 @@ void	free_all(t_data *data, int error)
 		exit(ft_printf("%s\n",strerror(errno)));
 }
 
+//recupere la liste des paths depuis envp
 char	*get_paths(char **envp, t_data *data)
 {
 	char	*path;
@@ -78,14 +75,15 @@ char	*get_paths(char **envp, t_data *data)
 	return (path);
 }
 
+//Trouve le path ou ce situe la commande
 char	*find_path(char *command, char **paths, t_data *data)
 {
 	int		i;
 	char	*temp;
 	char	*temp2;
 
-	i = 0;
-	while (paths[i])
+	i = -1;
+	while (paths[++i])
 	{
 		temp = ft_strjoin(paths[i], "/");
 		if (!temp)
@@ -102,7 +100,6 @@ char	*find_path(char *command, char **paths, t_data *data)
 			exit(ft_printf("%s: %s\n",strerror(errno), temp2));
 		}
 		free(temp2);
-		i++;
 	}
 	free_all(data, 1);
 	return (NULL);
@@ -140,13 +137,71 @@ int	main(int argc, char **argv, char **envp)
 	if (!data.paths)
 		free_all(&data, 1);
 
-	//Split la commande de ces arguments
-	data.arg = ft_split(argv[2], ' ');
-	if (!data.arg)
-		free_all(&data, 1);
 	//char	*cmd;
 	//cmd = data.arg[0];
 
+	data.pid1 = fork();
+	if (data.pid1 < 0)
+		free_all(&data, 1);
+	if (!data.pid1)
+	{
+		//child1 process
+		if (dup2(data.input, 0) < 0)
+			free_all(&data, 1);
+		if (dup2(data.pipe[1], 1) < 0)
+			free_all(&data, 1);
+		close(data.pipe[0]);
+		close(data.input);
+
+		//cmd + arg + execve
+		//Split la commande de ces arguments
+		data.arg = ft_split(argv[2], ' ');
+		if (!data.arg)
+			free_all(&data, 1);
+		//Trouver le path de la commande
+		char *path;
+		path = find_path(data.arg[0], data.paths, &data);
+
+		if (execve(path, data.arg, envp) == -1)
+		{
+			free(path);
+			free_all(&data, 1);
+		}
+		free(path);
+	}
+	data.pid2 = fork();
+	if (data.pid2 < 0)
+		free_all(&data, 1);
+	if (!data.pid2)
+	{
+		//child2 process
+		waitpid(-1, NULL, 0);
+		if (dup2(data.output, 0) < 0)
+			free_all(&data, 1);
+		if (dup2(data.pipe[0], 1) < 0)
+			free_all(&data, 1);
+		close(data.pipe[1]);
+		close(data.output);
+
+		//cmd + arg + execve
+		//Split la commande de ces arguments
+		data.arg = ft_split(argv[3], ' ');
+		if (!data.arg)
+			free_all(&data, 1);
+		//Trouver le path de la commande
+		char *path;
+		path = find_path(data.arg[0], data.paths, &data);
+
+		if (execve(path, data.arg, envp) == -1)
+		{
+			free(path);
+			free_all(&data, 1);
+		}
+		free(path);
+	}
+
+	waitpid(data.pid1, NULL, 0);
+	waitpid(data.pid2, NULL, 0);
 	free_all(&data, 0);
 	return (0);
 }
