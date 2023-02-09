@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/09 16:26:00 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/09 16:30:16 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,6 @@ void	free_all(t_data *data, int error)
 		close(data->pipe[0]);
 	if (data->pipe[1] && data->pipe[1] != -1)
 		close(data->pipe[1]);
-	if (!data->pid1)
-	{
-		exit(1);
-		exit(ft_printf("%s\n",strerror(errno)));
-	}
 	if (!data->pid1 || !data->pid2)
 		data->error = 1;
 	if (error)
