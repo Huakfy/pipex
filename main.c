@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/08 16:09:35 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/09 12:51:23 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ void	free_all(t_data *data, int error)
 //recupere la liste des paths depuis envp
 char	*get_paths(char **envp, t_data *data)
 {
-	char	*path;
 	int		i;
 
 	i = 0;
@@ -65,14 +64,12 @@ char	*get_paths(char **envp, t_data *data)
 	{
 		if (envp[i][0] == 'P' && envp[i][1] == 'A' && envp[i][2] == 'T' &&
 			envp[i][3] == 'H' && envp[i][4] == '=')
-		{
-			path = ft_strdup(envp[i] + 5);
-			if (!path)
-				free_all(data, 1);
-		}
+			return(envp[i] + 5);
 		i++;
 	}
-	return (path);
+	ft_printf("No PATH");
+	free_all(data, 1);
+	return (NULL);
 }
 
 //Trouve le path ou ce situe la commande
@@ -133,12 +130,8 @@ int	main(int argc, char **argv, char **envp)
 	char	*paths;
 	paths = get_paths(envp, &data);
 	data.paths = ft_split(paths, ':');
-	free(paths);
 	if (!data.paths)
 		free_all(&data, 1);
-
-	//char	*cmd;
-	//cmd = data.arg[0];
 
 	data.pid1 = fork();
 	if (data.pid1 < 0)
@@ -146,9 +139,9 @@ int	main(int argc, char **argv, char **envp)
 	if (!data.pid1)
 	{
 		//child1 process
-		if (dup2(data.input, 0) < 0)
+		if (dup2(data.input, STDIN_FILENO) < 0)
 			free_all(&data, 1);
-		if (dup2(data.pipe[1], 1) < 0)
+		if (dup2(data.pipe[1], STDOUT_FILENO) < 0)
 			free_all(&data, 1);
 		close(data.pipe[0]);
 		close(data.input);
@@ -169,16 +162,16 @@ int	main(int argc, char **argv, char **envp)
 		}
 		free(path);
 	}
+
 	data.pid2 = fork();
 	if (data.pid2 < 0)
 		free_all(&data, 1);
 	if (!data.pid2)
 	{
 		//child2 process
-		waitpid(-1, NULL, 0);
-		if (dup2(data.output, 0) < 0)
+		if (dup2(data.output, STDOUT_FILENO) < 0)
 			free_all(&data, 1);
-		if (dup2(data.pipe[0], 1) < 0)
+		if (dup2(data.pipe[0], STDIN_FILENO) < 0)
 			free_all(&data, 1);
 		close(data.pipe[1]);
 		close(data.output);
@@ -189,6 +182,7 @@ int	main(int argc, char **argv, char **envp)
 		if (!data.arg)
 			free_all(&data, 1);
 		//Trouver le path de la commande
+
 		char *path;
 		path = find_path(data.arg[0], data.paths, &data);
 
@@ -200,8 +194,10 @@ int	main(int argc, char **argv, char **envp)
 		free(path);
 	}
 
-	waitpid(data.pid1, NULL, 0);
-	waitpid(data.pid2, NULL, 0);
+	if (!data.pid1)
+		waitpid(data.pid1, NULL, 0);
+	if (!data.pid2)
+		waitpid(data.pid2, NULL, 0);
 	free_all(&data, 0);
 	return (0);
 }
