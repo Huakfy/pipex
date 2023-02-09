@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:26 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/08 14:49:57 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/09 16:25:41 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <errno.h>
-//# include <stdio.h>
 # include <string.h>
 # include <fcntl.h>
 # include <sys/wait.h>
@@ -33,6 +32,7 @@ typedef struct s_data
 	int		pipe[2];
 	pid_t	pid1;
 	pid_t	pid2;
+	int		error;
 }	t_data;
 
 #endif

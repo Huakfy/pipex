@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/09 12:51:23 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/09 16:26:00 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	init_args(t_data *data)
 	data->paths = NULL;
 	data->pipe[0] = -1;
 	data->pipe[1] = -1;
+	data->error = 0;
 }
 
 //close / free tout les arguments en fin de programme / cas d'erreur
@@ -50,12 +51,19 @@ void	free_all(t_data *data, int error)
 		close(data->pipe[0]);
 	if (data->pipe[1] && data->pipe[1] != -1)
 		close(data->pipe[1]);
+	if (!data->pid1)
+	{
+		exit(1);
+		exit(ft_printf("%s\n",strerror(errno)));
+	}
+	if (!data->pid1 || !data->pid2)
+		data->error = 1;
 	if (error)
 		exit(ft_printf("%s\n",strerror(errno)));
 }
 
 //recupere la liste des paths depuis envp
-char	*get_paths(char **envp, t_data *data)
+void	get_paths(char **envp, t_data *data)
 {
 	int		i;
 
@@ -64,12 +72,16 @@ char	*get_paths(char **envp, t_data *data)
 	{
 		if (envp[i][0] == 'P' && envp[i][1] == 'A' && envp[i][2] == 'T' &&
 			envp[i][3] == 'H' && envp[i][4] == '=')
-			return(envp[i] + 5);
+			{
+				data->paths = ft_split(envp[i] + 5, ':');
+				if (!data->paths)
+					free_all(data, 1);
+				return ;
+			}
 		i++;
 	}
 	ft_printf("No PATH");
 	free_all(data, 1);
-	return (NULL);
 }
 
 //Trouve le path ou ce situe la commande
@@ -94,7 +106,7 @@ char	*find_path(char *command, char **paths, t_data *data)
 			if (!access(temp2, X_OK))
 				return (temp2);
 			free_all(data, 0);
-			exit(ft_printf("%s: %s\n",strerror(errno), temp2));
+			exit (ft_printf("%s: %s\n",strerror(errno), temp2));
 		}
 		free(temp2);
 	}
@@ -127,11 +139,7 @@ int	main(int argc, char **argv, char **envp)
 		free_all(&data, 1);
 
 	//Recuperer les differents paths
-	char	*paths;
-	paths = get_paths(envp, &data);
-	data.paths = ft_split(paths, ':');
-	if (!data.paths)
-		free_all(&data, 1);
+	get_paths(envp, &data);
 
 	data.pid1 = fork();
 	if (data.pid1 < 0)
@@ -163,6 +171,9 @@ int	main(int argc, char **argv, char **envp)
 		free(path);
 	}
 
+	if (data.error == 1)
+		free_all(&data, 1);
+
 	data.pid2 = fork();
 	if (data.pid2 < 0)
 		free_all(&data, 1);
@@ -193,6 +204,9 @@ int	main(int argc, char **argv, char **envp)
 		}
 		free(path);
 	}
+
+	if (data.error == 1)
+		free_all(&data, 1);
 
 	if (!data.pid1)
 		waitpid(data.pid1, NULL, 0);
