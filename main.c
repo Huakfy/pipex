@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/09 16:55:22 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/09 17:11:56 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,29 +24,28 @@ void	init_args(t_data *data)
 	data->error = 0;
 }
 
-//close / free tout les arguments en fin de programme / cas d'erreur
-void	free_all(t_data *data, int error)
+void	free_array(char **array)
 {
 	int	i;
 
+	if (array)
+	{
+		i = -1;
+		while (array[++i])
+			free(array[i]);
+		free(array);
+	}
+}
+
+//close / free tout les arguments en fin de programme / cas d'erreur
+void	free_all(t_data *data, int error)
+{
 	if (data->input && data->input != -1)
 		close (data->input);
 	if (data->output && data->output != -1)
 		close (data->output);
-	if (data->arg)
-	{
-		i = -1;
-		while (data->arg[++i])
-			free(data->arg[i]);
-		free(data->arg);
-	}
-	if (data->paths)
-	{
-		i = -1;
-		while (data->paths[++i])
-			free(data->paths[i]);
-		free(data->paths);
-	}
+	free_array(data->arg);
+	free_array(data->paths);
 	if (data->pipe[0] && data->pipe[0] != -1)
 		close(data->pipe[0]);
 	if (data->pipe[1] && data->pipe[1] != -1)
@@ -186,6 +185,7 @@ int	main(int argc, char **argv, char **envp)
 		exit (ft_printf("Error\nMust have 4 arguments\n"));
 	if (pipe(data.pipe) < 0)
 		free_all(&data, 1);
+	verify_files(&data, argc, argv);
 	get_paths(envp, &data);
 	child_process1(&data, argv, envp);
 	if (data.error == 1)
