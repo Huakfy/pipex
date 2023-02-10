@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/10 12:12:39 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/10 14:13:34 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ static void	init_args(t_data *data)
 	data->paths = NULL;
 	data->pipe[0] = -1;
 	data->pipe[1] = -1;
+	data->pid1 = -1;
+	data->pid2 = -1;
 	data->error = 0;
 }
 
