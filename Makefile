@@ -1,4 +1,4 @@
-SRCS	=	main.c \
+SRCS	=	main.c pipex_utils.c\
 			ft_printf/ft_printchar_fd.c ft_printf/ft_printnbr_fd.c \
 			ft_printf/ft_uibasefd.c ft_printf/ft_printf.c \
 			ft_printf/ft_printstr_fd.c ft_printf/ft_printmemory_fd.c \

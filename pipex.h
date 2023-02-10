@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:26 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/09 16:25:41 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/10 12:10:09 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,9 @@ typedef struct s_data
 	pid_t	pid2;
 	int		error;
 }	t_data;
+
+void	free_all(t_data *data, int error);
+void	child_process1(t_data *data, char **argv, char **envp);
+void	child_process2(t_data *data, char **argv, char **envp);
 
 #endif
