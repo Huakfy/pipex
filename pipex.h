@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:26 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/10 12:10:09 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/13 13:40:02 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 
 # include "ft_printf/libftprintf.h"
 # include "libft/libft.h"
+
+# define DB ft_printf("DEBUG: %s %d\n", __FILE__, __LINE__)
 
 typedef struct s_data
 {

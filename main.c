@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/10 14:14:42 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/13 14:13:54 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void	init_args(t_data *data)
 {
 	data->input = -1;
 	data->output = -1;
-	data->arg =NULL;
+	data->arg = NULL;
 	data->paths = NULL;
 	data->pipe[0] = -1;
 	data->pipe[1] = -1;
@@ -78,10 +78,10 @@ int	main(int argc, char **argv, char **envp)
 	child_process2(&data, argv, envp);
 	if (data.error == 1)
 		free_all(&data, 1);
-	if (!data.pid1)
-		waitpid(data.pid1, NULL, 0);
-	if (!data.pid2)
-		waitpid(data.pid2, NULL, 0);
+	close(data.pipe[0]);
+	close(data.pipe[1]);
+	wait(NULL);
+	wait(NULL);
 	free_all(&data, 0);
 	return (0);
 }
