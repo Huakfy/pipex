@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/10 12:07:03 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/10 12:12:12 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/10 14:25:48 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,19 @@ static void	free_array(char **array)
 //close / free tout les arguments en fin de programme / cas d'erreur
 void	free_all(t_data *data, int error)
 {
+	char *err;
+
+	err = NULL;
+	if (!data->pid1)
+	{
+		err = strerror(errno);
+		waitpid(data->pid1, NULL, 0);
+	}
+	else if (!data->pid2)
+	{
+		err = strerror(errno);
+		waitpid(data->pid2, NULL, 0);
+	}
 	if (data->input && data->input != -1)
 		close (data->input);
 	if (data->output && data->output != -1)
@@ -38,8 +51,8 @@ void	free_all(t_data *data, int error)
 		close(data->pipe[0]);
 	if (data->pipe[1] && data->pipe[1] != -1)
 		close(data->pipe[1]);
-	if (!data->pid1 || !data->pid2)
-		data->error = 1;
+	if (err)
+		exit (ft_printf("%s\n",err));
 	if (error)
 		exit(ft_printf("%s\n",strerror(errno)));
 }
