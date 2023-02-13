@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/10 12:07:03 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/13 13:59:56 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/13 14:51:40 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,19 +28,6 @@ static void	free_array(char **array)
 //close / free tout les arguments en fin de programme / cas d'erreur
 void	free_all(t_data *data, int error)
 {
-	char *err;
-
-	err = NULL;
-	if (!data->pid1)
-	{
-		err = strerror(errno);
-		waitpid(data->pid1, NULL, 0);
-	}
-	else if (!data->pid2)
-	{
-		err = strerror(errno);
-		waitpid(data->pid2, NULL, 0);
-	}
 	if (data->input && data->input != -1)
 		close (data->input);
 	if (data->output && data->output != -1)
@@ -51,10 +38,8 @@ void	free_all(t_data *data, int error)
 		close(data->pipe[0]);
 	if (data->pipe[1] && data->pipe[1] != -1)
 		close(data->pipe[1]);
-	if (err)
-		exit (ft_printf("%s\n",err));
 	if (error)
-		exit(ft_printf("%s\n",strerror(errno)));
+		exit(ft_printf("%s\n", strerror(errno)));
 }
 
 //Trouve le path ou ce situe la commande
@@ -79,7 +64,7 @@ static char	*find_path(char *command, char **paths, t_data *data)
 			if (!access(temp2, X_OK))
 				return (temp2);
 			free_all(data, 0);
-			exit (ft_printf("%s: %s\n",strerror(errno), temp2));
+			exit (ft_printf("%s: %s\n", strerror(errno), temp2));
 		}
 		free(temp2);
 	}
@@ -89,7 +74,7 @@ static char	*find_path(char *command, char **paths, t_data *data)
 
 void	child_process1(t_data *data, char **argv, char **envp)
 {
-	char *path;
+	char	*path;
 
 	data->pid1 = fork();
 	if (data->pid1 < 0)
@@ -117,6 +102,8 @@ void	child_process1(t_data *data, char **argv, char **envp)
 
 void	child_process2(t_data *data, char **argv, char **envp)
 {
+	char	*path;
+
 	data->pid2 = fork();
 	if (data->pid2 < 0)
 		free_all(data, 1);
@@ -131,7 +118,6 @@ void	child_process2(t_data *data, char **argv, char **envp)
 		data->arg = ft_split(argv[3], ' ');
 		if (!data->arg)
 			free_all(data, 1);
-		char *path;
 		path = find_path(data->arg[0], data->paths, data);
 		if (execve(path, data->arg, envp) == -1)
 		{

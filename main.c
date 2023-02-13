@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/13 14:13:54 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/13 14:53:12 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,12 @@ static void	verify_files(t_data *data, int argc, char **argv)
 {
 	data->input = open(argv[1], O_RDONLY);
 	if (data->input < 0)
-		exit (ft_printf("%s: %s\n",strerror(errno), argv[1]));
+		exit (ft_printf("%s: %s\n", strerror(errno), argv[1]));
 	data->output = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (data->output < 0)
 	{
 		free_all(data, 0);
-		exit (ft_printf("%s: %s\n",strerror(errno), argv[argc - 1]));
+		exit (ft_printf("%s: %s\n", strerror(errno), argv[argc - 1]));
 	}
 }
 
@@ -49,12 +49,12 @@ static void	get_paths(char **envp, t_data *data)
 	{
 		if (envp[i][0] == 'P' && envp[i][1] == 'A' && envp[i][2] == 'T' &&
 			envp[i][3] == 'H' && envp[i][4] == '=')
-			{
-				data->paths = ft_split(envp[i] + 5, ':');
-				if (!data->paths)
-					free_all(data, 1);
-				return ;
-			}
+		{
+			data->paths = ft_split(envp[i] + 5, ':');
+			if (!data->paths)
+				free_all(data, 1);
+			return ;
+		}
 		i++;
 	}
 	ft_printf("No PATH");
