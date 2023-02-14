@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:25 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/14 14:41:34 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/14 16:57:57 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 
 # include "../ft_printf/libftprintf.h"
 # include "../libft/libft.h"
+# include "../gnl/get_next_line.h"
 
 typedef struct s_data
 {
