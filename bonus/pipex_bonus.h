@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:25 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/14 16:57:57 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/14 18:26:03 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ typedef struct s_data
 	int		*pipe;
 	pid_t	*pid;
 	int		nb_cmd;
+	int		here_doc;
+	char	*limiter;
 }	t_data;
 
 void	free_all(t_data *data, int error);

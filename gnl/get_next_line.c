@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 14:51:32 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/14 17:07:20 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/14 18:24:25 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ char	*get_next_line(int fd)
 	char		*next_line;
 	int			i;
 
+	if (fd < 0 && str)
+		free(str);
 	if (fd < 0 || (BUFFER_SIZE <= 0 && !str))
 		return (NULL);
 	str = read_endofline(fd, str);

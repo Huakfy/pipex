@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:28 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/14 16:25:02 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/14 18:36:32 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,14 @@ void	free_all(t_data *data, int error)
 		close (data->output);
 	free_array(data->arg);
 	free_array(data->paths);
-	free(data->pipe);
-	free(data->pid);
+	if (data->pipe)
+		free(data->pipe);
+	if(data->pid)
+		free(data->pid);
+	if (data->here_doc && access("here_doc.temp", F_OK))
+		unlink("here_doc.temp");
+	if (data->limiter)
+		free(data->limiter);
 	if (error)
 		exit(error);
 }
@@ -86,11 +92,11 @@ void	child_process_input(t_data *data, char **argv, char **envp)
 			free_all(data, 1);
 		if (dup2(data->pipe[(data->nb_cmd - 2) * 2 + 1], STDOUT_FILENO) < 0)
 			free_all(data, 1);
-		i = 2 * (data->nb_cmd - 1);
+		i = 2 * (data->nb_cmd - 1 - data->here_doc);
 		while (--i >= 0)
 			close(data->pipe[i]);
 		close(data->input);
-		data->arg = ft_split(argv[2], ' ');
+		data->arg = ft_split(argv[2 + data->here_doc], ' ');
 		if (!data->arg)
 			free_all(data, 1);
 		path = find_path(data->arg[0], data->paths, data);
@@ -117,7 +123,7 @@ void	child_process(t_data *data, char **argv, char **envp, int i)
 			free_all(data, 1);
 		if (dup2(data->pipe[(data->nb_cmd - 2) * 2 + 1 - (i * 2)], STDOUT_FILENO) < 0)
 			free_all(data, 1);
-		j = 2 * (data->nb_cmd - 1);
+		j = 2 * (data->nb_cmd - 1 - data->here_doc);
 		while (--j >= 0)
 			close(data->pipe[j]);
 		data->arg = ft_split(argv[i + 2], ' ');
@@ -147,7 +153,7 @@ void	child_process_output(t_data *data, char **argv, char **envp, int i)
 			free_all(data, 1);
 		if (dup2(data->output, STDOUT_FILENO) < 0)
 			free_all(data, 1);
-		j = 2 * (data->nb_cmd - 1);
+		j = 2 * (data->nb_cmd - 1 - data->here_doc);
 		while (--j >= 0)
 			close(data->pipe[j]);
 		close(data->output);
