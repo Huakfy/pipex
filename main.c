@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/13 14:53:12 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/14 11:00:30 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ static void	init_args(t_data *data)
 	data->pipe[1] = -1;
 	data->pid1 = -1;
 	data->pid2 = -1;
-	data->error = 0;
 }
 
 static void	verify_files(t_data *data, int argc, char **argv)
@@ -73,11 +72,7 @@ int	main(int argc, char **argv, char **envp)
 	verify_files(&data, argc, argv);
 	get_paths(envp, &data);
 	child_process1(&data, argv, envp);
-	if (data.error == 1)
-		free_all(&data, 1);
 	child_process2(&data, argv, envp);
-	if (data.error == 1)
-		free_all(&data, 1);
 	close(data.pipe[0]);
 	close(data.pipe[1]);
 	wait(NULL);

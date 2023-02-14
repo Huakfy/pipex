@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/10 12:07:03 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/13 14:51:40 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/14 11:08:51 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ static void	free_array(char **array)
 //close / free tout les arguments en fin de programme / cas d'erreur
 void	free_all(t_data *data, int error)
 {
+	if (error)
+		ft_printf("%s\n", strerror(errno));
 	if (data->input && data->input != -1)
 		close (data->input);
 	if (data->output && data->output != -1)
@@ -39,7 +41,7 @@ void	free_all(t_data *data, int error)
 	if (data->pipe[1] && data->pipe[1] != -1)
 		close(data->pipe[1]);
 	if (error)
-		exit(ft_printf("%s\n", strerror(errno)));
+		exit(error);
 }
 
 //Trouve le path ou ce situe la commande
