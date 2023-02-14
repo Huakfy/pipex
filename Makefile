@@ -1,11 +1,18 @@
-SRCS	=	main.c pipex_utils.c\
-			ft_printf/ft_printchar_fd.c ft_printf/ft_printnbr_fd.c \
+SRCS	=	ft_printf/ft_printchar_fd.c ft_printf/ft_printnbr_fd.c \
 			ft_printf/ft_uibasefd.c ft_printf/ft_printf.c \
 			ft_printf/ft_printstr_fd.c ft_printf/ft_printmemory_fd.c \
 			ft_printf/ft_printunbr_fd.c \
 			libft/ft_split.c libft/ft_strdup.c libft/ft_strjoin.c
 
+MANDATORY	=	main.c pipex_utils.c
+
+BONUS		=	bonus/main_bonus.c bonus/pipex_utils_bonus.c
+
 OBJS	=	${SRCS:.c=.o}
+
+OBJS_MANDATORY	=	${MANDATORY:.c=.o}
+
+OBJS_BONUS		=	${BONUS:.c=.o}
 
 CC		=	gcc
 
@@ -15,16 +22,23 @@ RM	=	rm -f
 
 NAME	=	pipex
 
+NAME_B	=	pipex_bonus
+
 .c.o:
 	${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
 
-${NAME}: ${OBJS}
-	${CC} ${CFLAGS} -o ${NAME} ${OBJS}
+${NAME}: ${OBJS} ${OBJS_MANDATORY}
+	${CC} ${CFLAGS} -o ${NAME} ${OBJS} ${OBJS_MANDATORY}
+
+${NAME_B}: ${OBJS} ${OBJS_BONUS}
+	${CC} ${CFLAGS} -o ${NAME_B} ${OBJS} ${OBJS_BONUS}
 
 all: ${NAME}
 
+bonus: ${NAME_B}
+
 clean:
-	${RM} ${OBJS}
+	${RM} ${OBJS} ${OBJS_MANDATORY} ${OBJS_BONUS}
 
 fclean: clean
 	${RM} ${NAME}
@@ -32,6 +46,7 @@ fclean: clean
 re: fclean all
 
 norm:
-	norminette ${SRCS} ft_printf/libftprintf.h libft/libft.h pipex.h
+	norminette ${SRCS} ${MANDATORY} ${BONUS} ft_printf/libftprintf.h \
+	libft/libft.h pipex.h bonus/pipex_bonus.h
 
 .PHONY: all bonus clean fclean re norm

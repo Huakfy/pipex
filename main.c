@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/14 11:00:30 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/14 11:57:42 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ static void	init_args(t_data *data)
 	data->pid2 = -1;
 }
 
+//verifie l'existence / acces aux fichiers
 static void	verify_files(t_data *data, int argc, char **argv)
 {
 	data->input = open(argv[1], O_RDONLY);
