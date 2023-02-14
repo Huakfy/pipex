@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/14 11:57:42 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/14 17:33:28 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ static void	init_args(t_data *data)
 //verifie l'existence / acces aux fichiers
 static void	verify_files(t_data *data, int argc, char **argv)
 {
+	int	i;
+	int	j;
+
 	data->input = open(argv[1], O_RDONLY);
 	if (data->input < 0)
 		exit (ft_printf("%s: %s\n", strerror(errno), argv[1]));
@@ -36,6 +39,18 @@ static void	verify_files(t_data *data, int argc, char **argv)
 	{
 		free_all(data, 0);
 		exit (ft_printf("%s: %s\n", strerror(errno), argv[argc - 1]));
+	}
+	i = -1;
+	while (argv[++i])
+	{
+		j = 0;
+		while (argv[i][j])
+			j++;
+		if (j == 0)
+		{
+			free_all(data, 0);
+			exit (ft_printf("Error\nEmpty Argument\n"));
+		}
 	}
 }
 
