@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/10 12:07:03 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/14 11:08:51 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/15 18:43:34 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,10 @@ void	child_process1(t_data *data, char **argv, char **envp)
 			free_all(data, 1);
 		if (dup2(data->pipe[1], STDOUT_FILENO) < 0)
 			free_all(data, 1);
-		close(data->pipe[0]);
-		close(data->input);
+		if (close(data->pipe[0]) < 0)
+			free_all(data, 1);
+		if (close(data->input) < 0)
+			free_all(data, 1);
 		data->arg = ft_split(argv[2], ' ');
 		if (!data->arg)
 			free_all(data, 1);
@@ -115,8 +117,10 @@ void	child_process2(t_data *data, char **argv, char **envp)
 			free_all(data, 1);
 		if (dup2(data->pipe[0], STDIN_FILENO) < 0)
 			free_all(data, 1);
-		close(data->pipe[1]);
-		close(data->output);
+		if (close(data->pipe[1]) < 0)
+			free_all(data, 1);
+		if (close(data->output) < 0)
+			free_all(data, 1);
 		data->arg = ft_split(argv[3], ' ');
 		if (!data->arg)
 			free_all(data, 1);

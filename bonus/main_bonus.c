@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:22 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/15 12:15:49 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/15 18:38:53 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,23 +47,27 @@ static void	here_doc(t_data *data, int argc, char **argv)
 	data->limiter = ft_strjoin(argv[2], "\n");
 	if (!data->limiter)
 		free_all(data, 1);
+
 	//lit jusqu'a trouver le limiter
 	while (1)
 	{
-		write(1, "> ", 2);
+		if (write(1, "> ", 2) < 0)
+			free_all(data, 1);
 		tmp = get_next_line(0);
 		if (!tmp)
 			free_all(data, 1);
 		if (!ft_strncmp(tmp, data->limiter, ft_strlen(data->limiter)))
 			break ;
-		write(data->input, tmp, ft_strlen(tmp));
+		if (write(data->input, tmp, ft_strlen(tmp)) < 0)
+			free_all(data, 1);
 		free(tmp);
 	}
-	close(data->input);
 	free(tmp);
 	free(data->limiter);
 	data->limiter = NULL;
 	get_next_line(-1);
+	if (close(data->input) < 0)
+		free_all(data, 1);
 
 	//open data->output
 	open("here_doc.temp", O_RDONLY);
@@ -98,6 +102,7 @@ static void	verify_args(t_data *data, char **argv)
 //verifie l'existence / acces aux fichiers
 static void	verify_files(t_data *data, int argc, char **argv)
 {
+	verify_args(data, argv);
 	if (!ft_strncmp("here_doc", argv[1], 9))
 		here_doc(data, argc, argv);
 	else
@@ -112,7 +117,6 @@ static void	verify_files(t_data *data, int argc, char **argv)
 			exit (ft_printf("%s: %s\n", strerror(errno), argv[argc - 1]));
 		}
 	}
-	verify_args(data, argv);
 }
 
 //recupere la liste des paths depuis envp

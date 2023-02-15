@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:28 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/15 13:04:54 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/15 18:41:30 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ static void	free_array(char **array)
 //close / free tout les arguments en fin de programme / cas d'erreur
 void	free_all(t_data *data, int error)
 {
+	int	i;
+
 	if (error)
 		ft_printf("%s\n", strerror(errno));
 	if (data->input && data->input != -1)
@@ -36,14 +38,18 @@ void	free_all(t_data *data, int error)
 		close (data->output);
 	free_array(data->arg);
 	free_array(data->paths);
-	if (data->pipe)
-		free(data->pipe);
 	if(data->pid)
 		free(data->pid);
 	if (data->here_doc && access("../here_doc.temp", F_OK))
 		unlink("here_doc.temp");
 	if (data->limiter)
 		free(data->limiter);
+	i = -1;
+	if (data->pipe)
+		while (++i < 2 * (data->nb_cmd - 1 - data->here_doc))
+			close(data->pipe[i]);
+	if (data->pipe)
+		free(data->pipe);
 	if (error)
 		exit(error);
 }
@@ -94,8 +100,10 @@ void	child_process_input(t_data *data, char *cmd, char **envp)
 			free_all(data, 1);
 		i = 2 * (data->nb_cmd - 1 - data->here_doc);
 		while (--i >= 0)
-			close(data->pipe[i]);
-		close(data->input);
+			if (close(data->pipe[i]) < 0)
+				free_all(data, 1);
+		if (close(data->input) < 0)
+			free_all(data, 1);
 		data->arg = ft_split(cmd, ' ');
 		if (!data->arg)
 			free_all(data, 1);
@@ -125,7 +133,8 @@ void	child_process(t_data *data, char *cmd, char **envp, int i)
 			free_all(data, 1);
 		j = 2 * (data->nb_cmd - 1 - data->here_doc);
 		while (--j >= 0)
-			close(data->pipe[j]);
+			if (close(data->pipe[j]) < 0)
+				free_all(data, 1);
 		data->arg = ft_split(cmd, ' ');
 		if (!data->arg)
 			free_all(data, 1);
@@ -155,8 +164,10 @@ void	child_process_output(t_data *data, char *cmd, char **envp, int i)
 			free_all(data, 1);
 		j = 2 * (data->nb_cmd - 1 - data->here_doc);
 		while (--j >= 0)
-			close(data->pipe[j]);
-		close(data->output);
+			if (close(data->pipe[j]) < 0)
+				free_all(data, 1);
+		if (close(data->output) < 0)
+			free_all(data, 1);
 		data->arg = ft_split(cmd, ' ');
 		if (!data->arg)
 			free_all(data, 1);
