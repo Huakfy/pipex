@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:28 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/14 18:36:32 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/15 12:14:34 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static char	*find_path(char *command, char **paths, t_data *data)
 	return (NULL);
 }
 
-void	child_process_input(t_data *data, char **argv, char **envp)
+void	child_process_input(t_data *data, char *cmd, char **envp)
 {
 	char	*path;
 	int		i;
@@ -90,13 +90,13 @@ void	child_process_input(t_data *data, char **argv, char **envp)
 	{
 		if (dup2(data->input, STDIN_FILENO) < 0)
 			free_all(data, 1);
-		if (dup2(data->pipe[(data->nb_cmd - 2) * 2 + 1], STDOUT_FILENO) < 0)
+		if (dup2(data->pipe[(data->nb_cmd - 2 - data->here_doc) * 2 + 1], STDOUT_FILENO) < 0)
 			free_all(data, 1);
 		i = 2 * (data->nb_cmd - 1 - data->here_doc);
 		while (--i >= 0)
 			close(data->pipe[i]);
 		close(data->input);
-		data->arg = ft_split(argv[2 + data->here_doc], ' ');
+		data->arg = ft_split(cmd, ' ');
 		if (!data->arg)
 			free_all(data, 1);
 		path = find_path(data->arg[0], data->paths, data);
@@ -109,7 +109,7 @@ void	child_process_input(t_data *data, char **argv, char **envp)
 	}
 }
 
-void	child_process(t_data *data, char **argv, char **envp, int i)
+void	child_process(t_data *data, char *cmd, char **envp, int i)
 {
 	char	*path;
 	int		j;
@@ -119,14 +119,14 @@ void	child_process(t_data *data, char **argv, char **envp, int i)
 		free_all(data, 1);
 	if (!data->pid[i])
 	{
-		if (dup2(data->pipe[(data->nb_cmd - 2) * 2 + 1 - (i * 2) + 1], STDIN_FILENO) < 0)
+		if (dup2(data->pipe[(data->nb_cmd - 2 - data->here_doc) * 2 + 1 - (i * 2) + 1], STDIN_FILENO) < 0)
 			free_all(data, 1);
-		if (dup2(data->pipe[(data->nb_cmd - 2) * 2 + 1 - (i * 2)], STDOUT_FILENO) < 0)
+		if (dup2(data->pipe[(data->nb_cmd - 2 - data->here_doc) * 2 + 1 - (i * 2)], STDOUT_FILENO) < 0)
 			free_all(data, 1);
 		j = 2 * (data->nb_cmd - 1 - data->here_doc);
 		while (--j >= 0)
 			close(data->pipe[j]);
-		data->arg = ft_split(argv[i + 2], ' ');
+		data->arg = ft_split(cmd, ' ');
 		if (!data->arg)
 			free_all(data, 1);
 		path = find_path(data->arg[0], data->paths, data);
@@ -139,7 +139,7 @@ void	child_process(t_data *data, char **argv, char **envp, int i)
 	}
 }
 
-void	child_process_output(t_data *data, char **argv, char **envp, int i)
+void	child_process_output(t_data *data, char *cmd, char **envp, int i)
 {
 	char	*path;
 	int		j;
@@ -157,7 +157,7 @@ void	child_process_output(t_data *data, char **argv, char **envp, int i)
 		while (--j >= 0)
 			close(data->pipe[j]);
 		close(data->output);
-		data->arg = ft_split(argv[i + 2], ' ');
+		data->arg = ft_split(cmd, ' ');
 		if (!data->arg)
 			free_all(data, 1);
 		path = find_path(data->arg[0], data->paths, data);
