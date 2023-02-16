@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 11:22:54 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/16 12:53:25 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/16 15:18:08 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,9 +189,7 @@ int	main(int argc, char **argv, char **envp)
 
 	child_process_output(&data, argv[argc - 2], envp);
 
-	i = -1;
-	while (++i < (2 * data.nb_cmd) - 2)
-		close(data.pipe[i]);
+	close_pipes(&data);
 	i = -1;
 	while (++i < data.nb_cmd)
 		wait(NULL);

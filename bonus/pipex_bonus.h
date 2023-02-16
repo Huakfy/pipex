@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:25 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/16 12:00:13 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/16 15:18:58 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,6 @@ void	free_all(t_data *data, int error);
 void	child_process_input(t_data *data, char *cmd, char **envp);
 void	child_process(t_data *data, char *cmd, char **envp);
 void	child_process_output(t_data *data, char *cmd, char **envp);
+void	close_pipes(t_data *data);
 
 #endif
