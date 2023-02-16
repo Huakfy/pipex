@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:25 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/15 12:12:51 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/16 12:00:13 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@ typedef struct s_data
 	char	**arg;
 	char	**paths;
 	int		*pipe;
+	int		index_pipe;
 	pid_t	*pid;
+	int		index_pid;
 	int		nb_cmd;
 	int		here_doc;
 	char	*limiter;
@@ -39,7 +41,7 @@ typedef struct s_data
 
 void	free_all(t_data *data, int error);
 void	child_process_input(t_data *data, char *cmd, char **envp);
-void	child_process(t_data *data, char *cmd, char **envp, int i);
-void	child_process_output(t_data *data, char *cmd, char **envp, int i);
+void	child_process(t_data *data, char *cmd, char **envp);
+void	child_process_output(t_data *data, char *cmd, char **envp);
 
 #endif

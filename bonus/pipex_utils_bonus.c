@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:28 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/15 18:41:30 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/16 12:55:50 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	free_all(t_data *data, int error)
 		free(data->limiter);
 	i = -1;
 	if (data->pipe)
-		while (++i < 2 * (data->nb_cmd - 1 - data->here_doc))
+		while (++i < (2 * data->nb_cmd) - 2)
 			close(data->pipe[i]);
 	if (data->pipe)
 		free(data->pipe);
@@ -89,25 +89,28 @@ void	child_process_input(t_data *data, char *cmd, char **envp)
 	char	*path;
 	int		i;
 
-	data->pid[0] = fork();
-	if (data->pid[0] < 0)
+	data->pid[data->index_pid] = fork();
+	if (data->pid[data->index_pid] < 0)
 		free_all(data, 1);
-	if (!data->pid[0])
+	if (!data->pid[data->index_pid])
 	{
 		if (dup2(data->input, STDIN_FILENO) < 0)
 			free_all(data, 1);
-		if (dup2(data->pipe[(data->nb_cmd - 2 - data->here_doc) * 2 + 1], STDOUT_FILENO) < 0)
+		if (dup2(data->pipe[data->index_pipe], STDOUT_FILENO) < 0)
 			free_all(data, 1);
-		i = 2 * (data->nb_cmd - 1 - data->here_doc);
+
+		i = (2 * data->nb_cmd) - 2;
 		while (--i >= 0)
 			if (close(data->pipe[i]) < 0)
 				free_all(data, 1);
 		if (close(data->input) < 0)
 			free_all(data, 1);
+
 		data->arg = ft_split(cmd, ' ');
 		if (!data->arg)
 			free_all(data, 1);
 		path = find_path(data->arg[0], data->paths, data);
+
 		if (execve(path, data->arg, envp) == -1)
 		{
 			free(path);
@@ -117,28 +120,31 @@ void	child_process_input(t_data *data, char *cmd, char **envp)
 	}
 }
 
-void	child_process(t_data *data, char *cmd, char **envp, int i)
+void	child_process(t_data *data, char *cmd, char **envp)
 {
 	char	*path;
 	int		j;
 
-	data->pid[i] = fork();
-	if (data->pid[i] < 0)
+	data->pid[data->index_pid] = fork();
+	if (data->pid[data->index_pid] < 0)
 		free_all(data, 1);
-	if (!data->pid[i])
+	if (!data->pid[data->index_pid])
 	{
-		if (dup2(data->pipe[(data->nb_cmd - 2 - data->here_doc) * 2 + 1 - (i * 2) + 1], STDIN_FILENO) < 0)
+		if (dup2(data->pipe[data->index_pipe + 1], STDIN_FILENO) < 0)
 			free_all(data, 1);
-		if (dup2(data->pipe[(data->nb_cmd - 2 - data->here_doc) * 2 + 1 - (i * 2)], STDOUT_FILENO) < 0)
+		if (dup2(data->pipe[data->index_pipe], STDOUT_FILENO) < 0)
 			free_all(data, 1);
-		j = 2 * (data->nb_cmd - 1 - data->here_doc);
+
+		j = (2 * data->nb_cmd) - 2;
 		while (--j >= 0)
 			if (close(data->pipe[j]) < 0)
 				free_all(data, 1);
+
 		data->arg = ft_split(cmd, ' ');
 		if (!data->arg)
 			free_all(data, 1);
 		path = find_path(data->arg[0], data->paths, data);
+
 		if (execve(path, data->arg, envp) == -1)
 		{
 			free(path);
@@ -148,30 +154,33 @@ void	child_process(t_data *data, char *cmd, char **envp, int i)
 	}
 }
 
-void	child_process_output(t_data *data, char *cmd, char **envp, int i)
+void	child_process_output(t_data *data, char *cmd, char **envp)
 {
 	char	*path;
 	int		j;
 
-	data->pid[i] = fork();
-	if (data->pid[i] < 0)
+	data->pid[data->index_pid] = fork();
+	if (data->pid[data->index_pid] < 0)
 		free_all(data, 1);
-	if (!data->pid[i])
+	if (!data->pid[data->index_pid])
 	{
 		if (dup2(data->pipe[0], STDIN_FILENO) < 0)
 			free_all(data, 1);
 		if (dup2(data->output, STDOUT_FILENO) < 0)
 			free_all(data, 1);
-		j = 2 * (data->nb_cmd - 1 - data->here_doc);
+
+		j = (2 * data->nb_cmd) - 2;
 		while (--j >= 0)
 			if (close(data->pipe[j]) < 0)
 				free_all(data, 1);
 		if (close(data->output) < 0)
 			free_all(data, 1);
+
 		data->arg = ft_split(cmd, ' ');
 		if (!data->arg)
 			free_all(data, 1);
 		path = find_path(data->arg[0], data->paths, data);
+
 		if (execve(path, data->arg, envp) == -1)
 		{
 			free(path);

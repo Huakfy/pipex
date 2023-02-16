@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/14 11:39:22 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/15 18:38:53 by mjourno          ###   ########.fr       */
+/*   Created: 2023/02/16 11:22:54 by mjourno           #+#    #+#             */
+/*   Updated: 2023/02/16 12:53:25 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,53 +30,54 @@ static void	init_args(t_data *data, int argc)
 static void	here_doc(t_data *data, int argc, char **argv)
 {
 	data->here_doc = 1;
+	data->nb_cmd -= 1;
 	if (argc < 6)
 	{
 		free_all(data, 0);
 		exit (ft_printf("Error\nMust have at least 5 arguments\n"));
 	}
-	data->input = open("here_doc.temp", O_CREAT | O_RDWR | O_TRUNC, 0644);
-	if (data->input < 0)
-	{
-		free_all(data, 0);
-		exit (ft_printf("%s: %s\n", strerror(errno), "here_doc.temp"));
-	}
+	//data->input = open("here_doc.temp", O_CREAT | O_RDWR | O_TRUNC, 0644);
+	//if (data->input < 0)
+	//{
+	//	free_all(data, 0);
+	//	exit (ft_printf("%s: %s\n", strerror(errno), "here_doc.temp"));
+	//}
 
-	//creer un limiter avec \n pour gnl
-	char	*tmp;
+	////creer un limiter avec \n pour gnl
+	//char	*tmp;
 	data->limiter = ft_strjoin(argv[2], "\n");
-	if (!data->limiter)
-		free_all(data, 1);
+	//if (!data->limiter)
+	//	free_all(data, 1);
 
-	//lit jusqu'a trouver le limiter
-	while (1)
-	{
-		if (write(1, "> ", 2) < 0)
-			free_all(data, 1);
-		tmp = get_next_line(0);
-		if (!tmp)
-			free_all(data, 1);
-		if (!ft_strncmp(tmp, data->limiter, ft_strlen(data->limiter)))
-			break ;
-		if (write(data->input, tmp, ft_strlen(tmp)) < 0)
-			free_all(data, 1);
-		free(tmp);
-	}
-	free(tmp);
+	////lit jusqu'a trouver le limiter
+	//while (1)
+	//{
+	//	if (write(1, "> ", 2) < 0)
+	//		free_all(data, 1);
+	//	tmp = get_next_line(0);
+	//	if (!tmp)
+	//		free_all(data, 1);
+	//	if (!ft_strncmp(tmp, data->limiter, ft_strlen(data->limiter)))
+	//		break ;
+	//	if (write(data->input, tmp, ft_strlen(tmp)) < 0)
+	//		free_all(data, 1);
+	//	free(tmp);
+	//}
+	//free(tmp);
 	free(data->limiter);
-	data->limiter = NULL;
-	get_next_line(-1);
-	if (close(data->input) < 0)
-		free_all(data, 1);
+	//data->limiter = NULL;
+	//get_next_line(-1);
+	//if (close(data->input) < 0)
+	//	free_all(data, 1);
 
-	//open data->output
-	open("here_doc.temp", O_RDONLY);
-	data->output = open(argv[argc - 1], O_CREAT | O_RDWR | O_APPEND, 0644);
-	if (data->output < 0)
-	{
-		free_all(data, 0);
-		exit (ft_printf("%s: %s\n", strerror(errno), argv[argc - 1]));
-	}
+	////open data->output
+	//open("here_doc.temp", O_RDONLY);
+	//data->output = open(argv[argc - 1], O_CREAT | O_RDWR | O_APPEND, 0644);
+	//if (data->output < 0)
+	//{
+	//	free_all(data, 0);
+	//	exit (ft_printf("%s: %s\n", strerror(errno), argv[argc - 1]));
+	//}
 }
 
 //verifie si un argument est vide
@@ -151,41 +152,48 @@ int	main(int argc, char **argv, char **envp)
 	verify_files(&data, argc, argv);
 
 	//creation pid
-	data.pid = malloc(sizeof(int) * argc - 3 - data.here_doc);
+	data.pid = malloc(sizeof(int) * data.nb_cmd);
 	if (!data.pid)
 		free_all(&data, 1);
 
 	//creation pipe
-	data.pipe = malloc(sizeof(int) * (2 * (argc - 4 - data.here_doc)));
+	data.pipe = malloc(sizeof(int) * ((2 * data.nb_cmd) - 2));
 	if (!data.pipe)
 		free_all(&data, 1);
 	//initialisation pipe a -1
-	i = 0;
-	while (i < 2 * (argc - 4  - data.here_doc))
-	{
+	i = (2 * data.nb_cmd) - 2;
+	while (--i >= 0)
 		data.pipe[i] = -1;
-		i++;
-	}
 	//initialisation pipe
 	i = -1;
-	while (++i < data.nb_cmd - 1 - data.here_doc)
-		if (pipe(data.pipe + 2 * i) < 0)
+	while (++i < data.nb_cmd - 1)
+		if (pipe(data.pipe + (2 * i)) < 0)
 			free_all(&data, 1);
 
 	//Cherche PATHS dans l'environnement
 	get_paths(envp, &data);
 
+	data.index_pipe = (2 * data.nb_cmd) - 3;
+	data.index_pid = 0;
 	child_process_input(&data, argv[2 + data.here_doc], envp);
+	data.index_pipe -= 2;
+	data.index_pid += 1;
+
 	i = 2 + data.here_doc;
-	while (++i < data.nb_cmd - 1)
-		child_process(&data, argv[i], envp, i);
-	child_process_output(&data, argv[i], envp, i);
+	while (++i < argc - 2)
+	{
+		child_process(&data, argv[i], envp);
+		data.index_pipe -= 2;
+		data.index_pid += 1;
+	}
+
+	child_process_output(&data, argv[argc - 2], envp);
 
 	i = -1;
-	while (++i < 2 * (data.nb_cmd - 1 - data.here_doc))
+	while (++i < (2 * data.nb_cmd) - 2)
 		close(data.pipe[i]);
 	i = -1;
-	while (++i < data.nb_cmd - data.here_doc)
+	while (++i < data.nb_cmd)
 		wait(NULL);
 
 	free_all(&data, 0);
