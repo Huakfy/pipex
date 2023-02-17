@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/10 12:07:03 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/17 13:06:10 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/17 15:28:40 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ static void	free_array(char **array)
 		while (array[++i])
 			free(array[i]);
 		free(array);
+		array = NULL;
 	}
 }
 
@@ -70,8 +71,7 @@ static char	*find_path(char *command, char **paths, t_data *data)
 		}
 		free(temp2);
 	}
-	free_all(data, 0);
-	exit (ft_printf("Error\nEmpty Argument\n"));
+	norm(data);
 	return (NULL);
 }
 
@@ -79,58 +79,53 @@ void	child_process1(t_data *data, char **argv, char **envp)
 {
 	char	*path;
 
+	data->arg = ft_split(argv[2], ' ');
+	if (!data->arg)
+		free_all(data, 1);
+	path = find_path(data->arg[0], data->paths, data);
 	data->pid1 = fork();
 	if (data->pid1 < 0)
 		free_all(data, 1);
 	if (!data->pid1)
 	{
-		if (dup2(data->input, STDIN_FILENO) < 0)
+		if (dup2(data->input, STDIN_FILENO) < 0
+			|| dup2(data->pipe[1], STDOUT_FILENO) < 0)
 			free_all(data, 1);
-		if (dup2(data->pipe[1], STDOUT_FILENO) < 0)
+		if (close(data->pipe[0]) < 0 || close(data->input) < 0)
 			free_all(data, 1);
-		if (close(data->pipe[0]) < 0)
-			free_all(data, 1);
-		if (close(data->input) < 0)
-			free_all(data, 1);
-		data->arg = ft_split(argv[2], ' ');
-		if (!data->arg)
-			free_all(data, 1);
-		path = find_path(data->arg[0], data->paths, data);
 		if (execve(path, data->arg, envp) == -1)
 		{
 			free(path);
 			free_all(data, 1);
 		}
-		free(path);
 	}
+	free(path);
+	free_array(data->arg);
 }
 
 void	child_process2(t_data *data, char **argv, char **envp)
 {
 	char	*path;
 
+	data->arg = ft_split(argv[3], ' ');
+	if (!data->arg)
+		free_all(data, 1);
+	path = find_path(data->arg[0], data->paths, data);
 	data->pid2 = fork();
 	if (data->pid2 < 0)
 		free_all(data, 1);
 	if (!data->pid2)
 	{
-		if (dup2(data->output, STDOUT_FILENO) < 0)
+		if (dup2(data->output, STDOUT_FILENO) < 0
+			|| dup2(data->pipe[0], STDIN_FILENO) < 0)
 			free_all(data, 1);
-		if (dup2(data->pipe[0], STDIN_FILENO) < 0)
+		if (close(data->pipe[1]) < 0 || close(data->output) < 0)
 			free_all(data, 1);
-		if (close(data->pipe[1]) < 0)
-			free_all(data, 1);
-		if (close(data->output) < 0)
-			free_all(data, 1);
-		data->arg = ft_split(argv[3], ' ');
-		if (!data->arg)
-			free_all(data, 1);
-		path = find_path(data->arg[0], data->paths, data);
 		if (execve(path, data->arg, envp) == -1)
 		{
 			free(path);
 			free_all(data, 1);
 		}
-		free(path);
 	}
+	free(path);
 }

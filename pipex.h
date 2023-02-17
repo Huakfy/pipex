@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:26 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/14 11:00:33 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/17 15:23:01 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,6 @@ typedef struct s_data
 void	free_all(t_data *data, int error);
 void	child_process1(t_data *data, char **argv, char **envp);
 void	child_process2(t_data *data, char **argv, char **envp);
+void	norm(t_data *data);
 
 #endif
