@@ -6,7 +6,8 @@ SRCS	=	ft_printf/ft_printchar_fd.c ft_printf/ft_printnbr_fd.c \
 
 MANDATORY	=	main.c pipex_utils.c
 
-BONUS		=	bonus/main_bonus.c bonus/pipex_utils_bonus.c\
+BONUS		=	bonus/free.c bonus/here_doc.c bonus/main_bonus.c bonus/paths.c\
+				bonus/pipex_utils_bonus.c\
 				gnl/get_next_line.c gnl/get_next_line_utils.c \
 				libft/ft_strncmp.c
 
@@ -43,7 +44,7 @@ clean:
 	${RM} ${OBJS} ${OBJS_MANDATORY} ${OBJS_BONUS}
 
 fclean: clean
-	${RM} ${NAME}
+	${RM} ${NAME} ${NAME_B}
 
 re: fclean all
 
