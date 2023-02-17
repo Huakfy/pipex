@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/10 12:07:03 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/15 18:43:34 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/17 13:06:10 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static char	*find_path(char *command, char **paths, t_data *data)
 	char	*temp2;
 
 	i = -1;
-	while (paths[++i])
+	while (paths[++i] && command)
 	{
 		temp = ft_strjoin(paths[i], "/");
 		if (!temp)
@@ -70,7 +70,8 @@ static char	*find_path(char *command, char **paths, t_data *data)
 		}
 		free(temp2);
 	}
-	free_all(data, 1);
+	free_all(data, 0);
+	exit (ft_printf("Error\nEmpty Argument\n"));
 	return (NULL);
 }
 
