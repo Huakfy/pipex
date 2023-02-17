@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:28 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/16 15:23:21 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/17 12:53:28 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ static void	free_array(char **array)
 		while (array[++i])
 			free(array[i]);
 		free(array);
+		array = NULL;
 	}
 }
 
@@ -106,6 +107,8 @@ void	child_process_input(t_data *data, char *cmd, char **envp)
 {
 	char	*path;
 
+	path = find_path0(data, cmd);
+
 	data->pid[data->index_pid] = fork();
 	if (data->pid[data->index_pid] < 0)
 		free_all(data, 1);
@@ -120,20 +123,18 @@ void	child_process_input(t_data *data, char *cmd, char **envp)
 		if (close(data->input) < 0)
 			free_all(data, 1);
 
-		path = find_path0(data, cmd);
-
 		if (execve(path, data->arg, envp) == -1)
-		{
-			free(path);
 			free_all(data, 1);
-		}
-		free(path);
 	}
+	free(path);
+	free_array(data->arg);
 }
 
 void	child_process(t_data *data, char *cmd, char **envp)
 {
 	char	*path;
+
+	path = find_path0(data, cmd);
 
 	data->pid[data->index_pid] = fork();
 	if (data->pid[data->index_pid] < 0)
@@ -147,20 +148,18 @@ void	child_process(t_data *data, char *cmd, char **envp)
 
 		close_pipes(data);
 
-		path = find_path0(data, cmd);
-
 		if (execve(path, data->arg, envp) == -1)
-		{
-			free(path);
 			free_all(data, 1);
-		}
-		free(path);
 	}
+	free(path);
+	free_array(data->arg);
 }
 
 void	child_process_output(t_data *data, char *cmd, char **envp)
 {
 	char	*path;
+
+	path = find_path0(data, cmd);
 
 	data->pid[data->index_pid] = fork();
 	if (data->pid[data->index_pid] < 0)
@@ -176,13 +175,8 @@ void	child_process_output(t_data *data, char *cmd, char **envp)
 		if (close(data->output) < 0)
 			free_all(data, 1);
 
-		path = find_path0(data, cmd);
-
 		if (execve(path, data->arg, envp) == -1)
-		{
-			free(path);
 			free_all(data, 1);
-		}
-		free(path);
 	}
+	free(path);
 }
