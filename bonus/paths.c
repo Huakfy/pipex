@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 15:36:03 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/17 15:50:35 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/20 12:22:23 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	get_paths(char **envp, t_data *data)
 	i = 0;
 	while (envp[i])
 	{
-		if (!ft_strncmp("PATH=",envp[i], 5))
+		if (!ft_strncmp("PATH=", envp[i], 5))
 		{
 			data->paths = ft_split(envp[i] + 5, ':');
 			if (!data->paths)

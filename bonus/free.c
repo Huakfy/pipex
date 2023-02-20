@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 15:34:01 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/17 15:34:59 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/20 12:22:43 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	free_all(t_data *data, int error)
 		close (data->output);
 	free_array(data->arg);
 	free_array(data->paths);
-	if(data->pid)
+	if (data->pid)
 		free(data->pid);
 	if (data->here_doc && access("../here_doc.temp", F_OK))
 		unlink("here_doc.temp");

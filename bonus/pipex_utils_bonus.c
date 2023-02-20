@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:28 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/17 16:02:51 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/20 12:21:59 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ static void	child_process(t_data *data, char *cmd, char **envp)
 	char	*path;
 
 	path = find_path0(data, cmd);
-
 	data->pid[data->index_pid] = fork();
 	if (data->pid[data->index_pid] < 0)
 		free_all(data, 1);
@@ -74,7 +73,6 @@ static void	child_process_output(t_data *data, char *cmd, char **envp)
 	char	*path;
 
 	path = find_path0(data, cmd);
-
 	data->pid[data->index_pid] = fork();
 	if (data->pid[data->index_pid] < 0)
 		free_all(data, 1);

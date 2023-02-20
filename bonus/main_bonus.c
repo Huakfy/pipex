@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 11:22:54 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/17 16:03:40 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/20 12:21:38 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ int	main(int argc, char **argv, char **envp)
 	i = -1;
 	while (++i < data.nb_cmd)
 		wait(NULL);
-
 	free_all(&data, 0);
 	return (0);
 }
