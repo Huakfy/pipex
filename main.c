@@ -6,18 +6,11 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 12:01:35 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/17 15:20:06 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/23 14:37:25 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-//Y a plus de place dans find_path (utils)
-void	norm(t_data *data)
-{
-	free_all(data, 0);
-	exit (ft_printf("Error\nEmpty Argument\n"));
-}
 
 //initialise tout les arguments a close / free
 static void	init_args(t_data *data)

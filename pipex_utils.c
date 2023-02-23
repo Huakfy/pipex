@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/10 12:07:03 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/17 15:28:40 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/23 14:36:48 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,36 +43,6 @@ void	free_all(t_data *data, int error)
 		close(data->pipe[1]);
 	if (error)
 		exit(error);
-}
-
-//Trouve le path ou ce situe la commande
-static char	*find_path(char *command, char **paths, t_data *data)
-{
-	int		i;
-	char	*temp;
-	char	*temp2;
-
-	i = -1;
-	while (paths[++i] && command)
-	{
-		temp = ft_strjoin(paths[i], "/");
-		if (!temp)
-			free_all(data, 1);
-		temp2 = ft_strjoin(temp, command);
-		free(temp);
-		if (!temp2)
-			free_all(data, 1);
-		if (!access(temp2, F_OK))
-		{
-			if (!access(temp2, X_OK))
-				return (temp2);
-			free_all(data, 0);
-			exit (ft_printf("%s: %s\n", strerror(errno), temp2));
-		}
-		free(temp2);
-	}
-	norm(data);
-	return (NULL);
 }
 
 void	child_process1(t_data *data, char **argv, char **envp)
