@@ -2,10 +2,9 @@ SRCS	=	ft_printf/ft_printchar_fd.c ft_printf/ft_printnbr_fd.c \
 			ft_printf/ft_uibasefd.c ft_printf/ft_printf.c \
 			ft_printf/ft_printstr_fd.c ft_printf/ft_printmemory_fd.c \
 			ft_printf/ft_printunbr_fd.c \
-			libft/ft_split.c libft/ft_strdup.c libft/ft_strjoin.c \
-			libft/ft_strchr.c
+			libft/ft_split.c libft/ft_strdup.c libft/ft_strjoin.c
 
-MANDATORY	=	main.c pipex_utils.c path.c
+MANDATORY	=	main.c pipex_utils.c path.c libft/ft_strchr.c
 
 BONUS		=	bonus/free.c bonus/here_doc.c bonus/main_bonus.c bonus/paths.c\
 				bonus/pipex_utils_bonus.c\
