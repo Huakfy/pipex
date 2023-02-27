@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 15:36:03 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/23 15:03:13 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/27 13:20:13 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,7 @@ static char	*find_path(char *command, char **paths, t_data *data)
 		{
 			if (!access(temp2, X_OK))
 				return (temp2);
-			ft_printf("%s: %s\n", strerror(errno), temp2);
-			free_all(data, 0);
-			free(temp2);
-			exit (1);
+			ft_error(temp2, data);
 		}
 		free(temp2);
 	}

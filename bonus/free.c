@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 15:34:01 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/20 12:22:43 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/27 13:20:17 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,13 @@ void	free_all(t_data *data, int error)
 		free(data->pipe);
 	if (error)
 		exit(error);
+}
+
+//y'a plus de place dans find_path
+void	ft_error(char *temp2, t_data *data)
+{
+	ft_printf("%s: %s\n", strerror(errno), temp2);
+	free_all(data, 0);
+	free(temp2);
+	exit (1);
 }

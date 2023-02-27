@@ -6,7 +6,7 @@
 /*   By: mjourno <mjourno@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 11:39:25 by mjourno           #+#    #+#             */
-/*   Updated: 2023/02/17 15:59:43 by mjourno          ###   ########.fr       */
+/*   Updated: 2023/02/27 11:56:39 by mjourno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,5 +46,6 @@ void	free_array(char **array);
 char	*find_path0(t_data *data, char *cmd);
 void	get_paths(char **envp, t_data *data);
 void	here_doc(t_data *data, int argc, char **argv);
+void	ft_error(char *temp2, t_data *data);
 
 #endif
