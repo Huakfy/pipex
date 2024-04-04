@@ -19,7 +19,7 @@ OBJS_BONUS		=	${BONUS:.c=.o}
 
 CC		=	gcc
 
-CFLAGS	=	-g3 -Wall -Werror -Wextra
+CFLAGS	=	-Wall -Werror -Wextra
 
 RM	=	rm -f
 
